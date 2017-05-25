@@ -1,0 +1,12 @@
+{
+	"name": "example",
+	"authors": [
+		"Ilya Yaroshenko"
+	],
+	"dependencies": {
+		"mir-blas": {"path": "../"},
+	},
+	"libs": ["blas"],
+	"description": "Mir-BLAS example",
+	"license": "BSL-1.0"
+}
