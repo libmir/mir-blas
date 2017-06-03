@@ -10,3 +10,4 @@ __test__*__
 example/example
 
 dub.selections.json
+.vscode
