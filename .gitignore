@@ -11,3 +11,7 @@ example/example
 
 dub.selections.json
 .vscode
+
+*.a
+
+mir-blas
