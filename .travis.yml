@@ -6,9 +6,11 @@ d:
   - dmd
   - ldc
 
-script: dub --root example
+script:
+  - dub --root example
+  - dub -c test
 
 addons:
   apt:
     packages:
-      liblapack-dev
+      libatlas-base-dev
