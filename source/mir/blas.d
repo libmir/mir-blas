@@ -62,8 +62,8 @@ void gemv(T,
     else
         enum transA = false;
     cblas.gemv(
-        cblas.Order.RowMajor,
-        transA ? cblas.Transpose.Trans : cblas.Transpose.NoTrans,
+        transA ? cblas.Order.ColMajor : cblas.Order.RowMajor,
+        cblas.Transpose.NoTrans,
         
         cast(cblas.blasint) y.length,
         cast(cblas.blasint) x.length,
@@ -105,7 +105,7 @@ void gemm(T,
         if (c._stride!1 != 1)
         {
             assert(c._stride!0 == 1, "Matrix C must have a stride equal to 1.");
-            gemv(
+            .gemm(
                 alpha,
                 b.universal.transposed,
                 a.universal.transposed,
@@ -161,6 +161,18 @@ void gemm(T,
         c.iterator,
         cast(cblas.blasint) c._stride,
     );
+}
+
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
+    auto b = [2.0, 3, 4].sliced(3, 1).universal;
+
+    auto c = [100.0, 100].sliced(2, 1).universal;
+    gemm(1.0, a, b, 1.0, c);
+    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
 }
 
 ///
