@@ -10,5 +10,20 @@
 	"description": "NDSLICE wrapper for BLAS",
 	"copyright": "Copyright © 2017, Symmetry Investments & Kaleidic Associates",
 	"license": "BSL-1.0",
-	"targetType": "sourceLibrary"
+	"configurations": [
+		{
+			"name": "library",
+			"targetType": "library"
+		},
+		{
+			"name": "sourceLibrary",
+			"targetType": "sourceLibrary"
+		},
+		{
+			"name": "test",
+			"targetType": "executable",
+			"dflags": ["-main"],
+			"libs": ["blas", "cblas"]
+		}
+	]
 }
