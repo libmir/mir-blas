@@ -8,9 +8,16 @@ NDSLICE wrapper for BLAS
 
 ### Level 1
  - dot
+ - nrm2
+ - asum
+ - copy
+ - axpy
+ - scal
+ - swap
 
 ### Level 2
  - gemv
+ - ger
 
 ### Level 3
  - gemm
