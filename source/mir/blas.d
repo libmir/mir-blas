@@ -35,6 +35,156 @@ T dot(T,
 }
 
 ///
+T nrm2(T,
+    SliceKind kindX,
+    )(
+    Slice!(kindX, [1], const(T)*) x,
+    )
+{
+    return cblas.nrm2(
+        cast(cblas.blasint) x.length,
+
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+    );
+}
+
+///
+T asum(T,
+    SliceKind kindX,
+    )(
+    Slice!(kindX, [1], const(T)*) x,
+    )
+{
+    return cblas.asum(
+        cast(cblas.blasint) x.length,
+
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+    );
+}
+
+///
+void axpy(T,
+    SliceKind kindX,
+    SliceKind kindY,
+    )(
+    T a,
+    Slice!(kindX, [1], const(T)*) x,
+    Slice!(kindY, [1], T*) y,
+    )
+{
+    assert(x.length == y.length);
+    cblas.axpy(
+        cast(cblas.blasint) x.length,
+        a,
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+        y.iterator,
+        cast(cblas.blasint) y._stride,
+    );
+}
+
+///
+void scal(T,
+    SliceKind kindX,
+    )(
+    T a,
+    Slice!(kindX, [1], T*) x,
+    )
+{
+    cblas.scal(
+        cast(cblas.blasint) x.length,
+        a,
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+    );
+}
+
+///
+void copy(T,
+    SliceKind kindX,
+    SliceKind kindY,
+    )(
+    Slice!(kindX, [1], const(T)*) x,
+    Slice!(kindY, [1], T*) y,
+    )
+{
+    assert(x.length == y.length);
+    cblas.copy(
+        cast(cblas.blasint) x.length,
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+        y.iterator,
+        cast(cblas.blasint) y._stride,
+    );
+}
+
+///
+void swap(T,
+    SliceKind kindX,
+    SliceKind kindY,
+    )(
+    Slice!(kindX, [1], T*) x,
+    Slice!(kindY, [1], T*) y,
+    )
+{
+    assert(x.length == y.length);
+    cblas.swap(
+        cast(cblas.blasint) x.length,
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+        y.iterator,
+        cast(cblas.blasint) y._stride,
+    );
+}
+
+///
+void ger(T,
+    SliceKind kindX,
+    SliceKind kindY,
+    SliceKind kindA,
+    )(
+    T alpha,
+    Slice!(kindX, [1], const(T)*) x,
+    Slice!(kindY, [1], const(T)*) y,
+    Slice!(kindA, [2], T*) a,
+    )
+{
+    assert(a.length!0 == x.length);
+    assert(a.length!1 == y.length);
+    static if (kindA == Universal)
+    {
+        bool transA;
+        if (a._stride!1 != 1)
+        {
+            a = a.transposed;
+            transA = true;
+        }
+        assert(a._stride!1 == 1, "Matrix A must have a stride equal to 1.");
+    }
+    else
+        enum transA = false;
+    cblas.ger(
+        transA ? cblas.Order.ColMajor : cblas.Order.RowMajor,
+
+        cast(cblas.blasint) a.length!0,
+        cast(cblas.blasint) a.length!1,
+
+        alpha,
+
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+
+        y.iterator,
+        cast(cblas.blasint) y._stride,
+
+        a.iterator,
+        cast(cblas.blasint) a._stride,
+    );
+}
+
+///
 void gemv(T,
     SliceKind kindA,
     SliceKind kindX,
