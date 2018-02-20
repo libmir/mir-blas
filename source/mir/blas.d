@@ -13,6 +13,13 @@ static import cblas;
 
 public import cblas: Uplo, Side;
 
+private auto matrixStride(S)(S a)
+ if (isSlice!S == [2])
+{
+    assert(a._stride!1 == 1);
+    return a._stride != 1 ? a._stride : a.length!1;
+}
+
 ///
 T dot(T,
     SliceKind kindX,
@@ -180,7 +187,7 @@ void ger(T,
         cast(cblas.blasint) y._stride,
 
         a.iterator,
-        cast(cblas.blasint) a._stride,
+        cast(cblas.blasint) a.matrixStride,
     );
 }
 
@@ -221,7 +228,7 @@ void gemv(T,
         alpha,
 
         a.iterator,
-        cast(cblas.blasint) a._stride,
+        cast(cblas.blasint) a.matrixStride,
 
         x.iterator,
         cast(cblas.blasint) x._stride,
@@ -249,7 +256,8 @@ void gemm(T,
     assert(a.length!1 == b.length!0);
     assert(a.length!0 == c.length!0);
     assert(c.length!1 == b.length!1);
-    auto k = a.length!1;
+    auto k = cast(cblas.blasint) a.length!1;
+
     static if (kindC == Universal)
     {
         if (c._stride!1 != 1)
@@ -289,34 +297,37 @@ void gemm(T,
     }
     else
         enum transB = false;
+
     cblas.gemm(
         cblas.Order.RowMajor,
         transA ? cblas.Transpose.Trans : cblas.Transpose.NoTrans,
         transB ? cblas.Transpose.Trans : cblas.Transpose.NoTrans,
         
         cast(cblas.blasint) c.length!0,
-        cast(cblas.blasint) c.length!1,
+        cast(cblas.blasint) c.length!1, 
         cast(cblas.blasint) k,
 
         alpha,
 
         a.iterator,
-        cast(cblas.blasint) a._stride,
+        cast(cblas.blasint) a.matrixStride,
 
         b.iterator,
-        cast(cblas.blasint) b._stride,
+        cast(cblas.blasint) b.matrixStride,
 
         beta,
 
         c.iterator,
-        cast(cblas.blasint) c._stride,
+        cast(cblas.blasint) c.matrixStride,
     );
 }
 
+///
 unittest
 {
     import mir.ndslice.slice: sliced;
     import mir.ndslice.topology: universal;
+
     auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
     auto b = [2.0, 3, 4].sliced(3, 1).universal;
 
@@ -324,6 +335,21 @@ unittest
     gemm(1.0, a, b, 1.0, c);
     assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
 }
+
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+    import mir.ndslice.dynamic: transposed;
+
+    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
+    auto b = [2.0, 3, 4].sliced(3, 1).universal;
+
+    auto c = [100.0, 100].sliced(1, 2).transposed.universal;
+    gemm(1.0, a, b, 1.0, c);
+    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
+}
+
 
 ///
 void syrk(T,
@@ -374,7 +400,7 @@ void syrk(T,
         alpha,
 
         a.iterator,
-        cast(cblas.blasint) a._stride,
+        cast(cblas.blasint) a.matrixStride,
 
         beta,
 

@@ -22,7 +22,6 @@
 		{
 			"name": "test",
 			"targetType": "executable",
-			"dflags": ["-main"],
 			"libs": ["blas", "cblas"]
 		}
 	]
