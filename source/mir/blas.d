@@ -382,3 +382,56 @@ void syrk(T,
         cast(cblas.blasint) c._stride,
     );
 }
+
+///
+void trsm(T,
+    SliceKind kindA,
+    SliceKind kindB,
+    )(
+    Side side,
+    Uplo uplo,
+    Diag diag,
+    T alpha,
+    Slice!(kindA, [2], T*) a,
+    Slice!(kindB, [2], T*) b
+    )
+{
+    static if (kindB == Universal)
+    {
+        if (b._stride!1 != 1)
+        {
+            assert(b._stride!0 == 1, "Matrix C must have a stride equal to 1.");
+            .trsm(
+                side,
+                uplo,
+                diag,
+                alpha,
+                a.universal.transposed,
+                b.transposed.assumeCanonical);
+            return;
+        }
+        assert(b._stride!1 == 1, "Matrix C must have a stride equal to 1.");
+    }
+    static if(kindA == Universal)
+    {
+        bool transA = false;
+        if(a._stride!1 != 1)
+        {
+            a = a.transposed;
+            uplo = uplo == Uplo.Lower? Uplo.Upper : Uplo.Lower;
+            transA = true;
+        }
+        assert(a._stride!1 == 1, "Matrix A must have a stride equal to 1.");
+    }
+    else
+        enum transA = false;
+    
+    cblas.blasint m = cast(cblas.blasint) b.length!1;
+    cblas.blasint n = cast(cblas.blasint) b.length!0;
+    cblas.blasint lda = side == Side.Left ? cast(cblas.blasint) a._stride : cast(cblas.blasint) a._stride!1;
+    cblas.blasint ldb = cast(cblas.blasint) b._stride;
+
+    cblas.trsm(cblas.Order.ColMajor, side, uplo,
+               transA ? cblas.Transpose.Trans : cblas.Transpose.NoTrans,
+               diag, m, n, alpha, a.iterator, lda, b.iterator, ldb);
+}
