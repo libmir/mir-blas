@@ -22,6 +22,8 @@ NDSLICE wrapper for BLAS
 ### Level 3
  - gemm
  - syrk
+ - trmm
+ - trsm
 
 ---------------
 

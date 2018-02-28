@@ -25,8 +25,8 @@ T dot(T,
     SliceKind kindX,
     SliceKind kindY,
     )(
-    Slice!(kindX, [1], T*) x,
-    Slice!(kindY, [1], T*) y,
+    Slice!(kindX, [1], const(T)*) x,
+    Slice!(kindY, [1], const(T)*) y,
     )
 {
     assert(x.length == y.length);
@@ -198,8 +198,8 @@ void gemv(T,
     SliceKind kindY,
     )(
     T alpha,
-    Slice!(kindA, [2], T*) a,
-    Slice!(kindX, [1], T*) x,
+    Slice!(kindA, [2], const(T)*) a,
+    Slice!(kindX, [1], const(T)*) x,
     T beta,
     Slice!(kindY, [1], T*) y,
     )
@@ -247,8 +247,8 @@ void gemm(T,
     SliceKind kindC,
     )(
     T alpha,
-    Slice!(kindA, [2], T*) a,
-    Slice!(kindB, [2], T*) b,
+    Slice!(kindA, [2], const(T)*) a,
+    Slice!(kindB, [2], const(T)*) b,
     T beta,
     Slice!(kindC, [2], T*) c,
     )
@@ -358,7 +358,7 @@ void syrk(T,
     )(
     Uplo uplo,
     T alpha,
-    Slice!(kindA, [2], T*) a,
+    Slice!(kindA, [2], const(T)*) a,
     T beta,
     Slice!(kindC, [2], T*) c,
     )
@@ -407,4 +407,157 @@ void syrk(T,
         c.iterator,
         cast(cblas.blasint) c._stride,
     );
+}
+
+///
+void trmm(T,
+    SliceKind kindA,
+    SliceKind kindB,
+    )(
+    cblas.Side side,
+    cblas.Uplo uplo,
+    cblas.Diag diag,
+    T alpha,
+    Slice!(kindA, [2], const(T)*) a,
+    Slice!(kindB, [2], T*) b,
+    )
+{
+    assert(a.length!1 == a.length!0);
+    assert(a.length == (side == cblas.Side.Left ? b.length!0 : b.length!1));
+
+    static if (kindB == Universal)
+    {
+        if (b._stride!1 != 1)
+        {
+            assert(b._stride!0 == 1, "Matrix B must have a stride equal to 1.");
+            return .trmm(
+                side == cblas.Side.Left ? cblas.Side.Right : cblas.Side.Left,
+                uplo == cblas.Uplo.Upper ? cblas.Uplo.Lower : cblas.Uplo.Upper,
+                diag,
+                alpha,
+                a.transposed,
+                b.transposed.assumeCanonical,
+            );
+        }
+    }
+
+    static if (kindA == Universal)
+    {
+        bool transA;
+        if (a._stride!1 != 1)
+        {
+            a = a.transposed;
+            transA = true;
+        }
+        assert(a._stride!1 == 1, "Matrix A must have a stride equal to 1.");
+    }
+    else
+        enum transA = false;
+
+    cblas.trmm(
+        cblas.Order.RowMajor,
+        side,
+        uplo,
+        transA ? cblas.Transpose.Trans : cblas.Transpose.NoTrans,
+        diag,
+
+        cast(cblas.blasint) b.length!0,
+        cast(cblas.blasint) b.length!1,
+
+        alpha,
+
+        a.iterator,
+        cast(cblas.blasint) a._stride,
+
+        b.iterator,
+        cast(cblas.blasint) b.matrixStride,
+    );
+}
+
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    alias S0 = trmm!(double, Contiguous, Contiguous);
+    alias S1 = trmm!(double, Contiguous, Universal);
+    alias S2 = trmm!(double, Universal, Contiguous);
+    alias S3 = trmm!(double, Universal, Universal);
+}
+
+
+///
+void trsm(T,
+    SliceKind kindA,
+    SliceKind kindB,
+    )(
+    cblas.Side side,
+    cblas.Uplo uplo,
+    cblas.Diag diag,
+    T alpha,
+    Slice!(kindA, [2], const(T)*) a,
+    Slice!(kindB, [2], T*) b,
+    )
+{
+    assert(a.length!1 == a.length!0);
+    assert(a.length == (side == cblas.Side.Left ? b.length!0 : b.length!1));
+
+    static if (kindB == Universal)
+    {
+        if (b._stride!1 != 1)
+        {
+            assert(b._stride!0 == 1, "Matrix B must have a stride equal to 1.");
+            return .trsm(
+                side == cblas.Side.Left ? cblas.Side.Right : cblas.Side.Left,
+                uplo == cblas.Uplo.Upper ? cblas.Uplo.Lower : cblas.Uplo.Upper,
+                diag,
+                alpha,
+                a.transposed,
+                b.transposed.assumeCanonical,
+            );
+        }
+    }
+
+    static if (kindA == Universal)
+    {
+        bool transA;
+        if (a._stride!1 != 1)
+        {
+            a = a.transposed;
+            transA = true;
+        }
+        assert(a._stride!1 == 1, "Matrix A must have a stride equal to 1.");
+    }
+    else
+        enum transA = false;
+
+    cblas.trsm(
+        cblas.Order.RowMajor,
+        side,
+        uplo,
+        transA ? cblas.Transpose.Trans : cblas.Transpose.NoTrans,
+        diag,
+
+        cast(cblas.blasint) b.length!0,
+        cast(cblas.blasint) b.length!1,
+
+        alpha,
+
+        a.iterator,
+        cast(cblas.blasint) a._stride,
+
+        b.iterator,
+        cast(cblas.blasint) b.matrixStride,
+    );
+}
+
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    alias S0 = trsm!(double, Contiguous, Contiguous);
+    alias S1 = trsm!(double, Contiguous, Universal);
+    alias S2 = trsm!(double, Universal, Contiguous);
+    alias S3 = trsm!(double, Universal, Universal);
 }
