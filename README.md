@@ -17,7 +17,8 @@ NDSLICE wrapper for BLAS
 
 ### Level 2
  - gemv
- - ger
+ - ger (includes geru)
+ - gerc (includes ger)
 
 ### Level 3
  - gemm

@@ -172,7 +172,60 @@ void ger(T,
     }
     else
         enum transA = false;
-    cblas.ger(
+    static if (isFloatingPoint!T)
+        alias gerImpl = cblas.ger;
+    else
+        alias gerImpl = cblas.geru;
+    gerImpl(
+        transA ? cblas.Order.ColMajor : cblas.Order.RowMajor,
+
+        cast(cblas.blasint) a.length!0,
+        cast(cblas.blasint) a.length!1,
+
+        alpha,
+
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+
+        y.iterator,
+        cast(cblas.blasint) y._stride,
+
+        a.iterator,
+        cast(cblas.blasint) a.matrixStride,
+    );
+}
+
+///
+void gerc(T,
+    SliceKind kindX,
+    SliceKind kindY,
+    SliceKind kindA,
+    )(
+    T alpha,
+    Slice!(kindX, [1], const(T)*) x,
+    Slice!(kindY, [1], const(T)*) y,
+    Slice!(kindA, [2], T*) a,
+    )
+{
+    assert(a.length!0 == x.length);
+    assert(a.length!1 == y.length);
+    static if (kindA == Universal)
+    {
+        bool transA;
+        if (a._stride!1 != 1)
+        {
+            a = a.transposed;
+            transA = true;
+        }
+        assert(a._stride!1 == 1, "Matrix A must have a stride equal to 1.");
+    }
+    else
+        enum transA = false;
+    static if (isFloatingPoint!T)
+        alias gerImpl = cblas.ger;
+    else
+        alias gerImpl = cblas.gerc;
+    gerImpl(
         transA ? cblas.Order.ColMajor : cblas.Order.RowMajor,
 
         cast(cblas.blasint) a.length!0,
