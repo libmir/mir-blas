@@ -11,6 +11,8 @@ import mir.ndslice.dynamic;
 import mir.ndslice.topology;
 static import cblas;
 
+import std.traits: isFloatingPoint;
+
 public import cblas: Uplo, Side;
 
 private auto matrixStride(S)(S a)
