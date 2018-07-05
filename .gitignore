@@ -16,3 +16,8 @@ dub.selections.json
 
 mir-blas
 mir-blas-test-test
+mir-blas-test-openblas
+mir-blas-test-blas
+mir-blas-test-cblas
+mir-blas-test-twolib
+mir-blas-test-intel-sequental
