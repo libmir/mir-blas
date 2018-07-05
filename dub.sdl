@@ -7,7 +7,10 @@ license "BSL-1.0"
 dependency "cblas" version="~>2.0.0"
 dependency "mir-algorithm" version=">=0.6.5"
 
+systemDependencies "Library with CBLAS API is required."
+
 configuration "openblas" {
+	versions "OPENBLAS"
 	libs "openblas"
 }
 
@@ -23,8 +26,13 @@ configuration "twolib" {
 	libs "blas" "cblas"
 }
 
+
 configuration "mkl-sequential" {
 	platforms "x86_64" "x86"
 	libs "mkl_blas95_lp64" "mkl_lapack95_lp64" "mkl_intel_lp64" "mkl_sequential" "mkl_core" platform="x86_64"
 	libs "mkl_blas95" "mkl_lapack95" "mkl_intel_c" "mkl_sequential" "mkl_core" platform="x86"
+}
+
+configuration "zerolib" {
+	systemDependencies "mir-blas configuration zerolib requires user to add specify libraries to link."
 }
