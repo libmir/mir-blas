@@ -34,5 +34,5 @@ configuration "mkl-sequential" {
 }
 
 configuration "zerolib" {
-	systemDependencies "mir-blas configuration zerolib requires user to add specify libraries to link."
+	systemDependencies "mir-blas configuration zerolib requires user to specify libraries to link."
 }
