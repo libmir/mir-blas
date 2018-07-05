@@ -7,8 +7,8 @@ d:
   - ldc
 
 script:
+  - dub test
   - dub --root example
-  - dub -c test
 
 addons:
   apt:
