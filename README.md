@@ -2,7 +2,8 @@
 NDSLICE wrapper for BLAS
 
 ## Required static libraries
- - `blas`/`cblas` - CBLAS API
+
+See [wiki: Link with CBLAS & LAPACK](https://github.com/libmir/mir-lapack/wiki/Link-with-CBLAS-&-LAPACK).
 
 ## Wrapped API
 
