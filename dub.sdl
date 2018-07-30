@@ -7,7 +7,31 @@ license "BSL-1.0"
 dependency "cblas" version="~>2.0.0"
 dependency "mir-algorithm" version=">=0.6.5"
 
-systemDependencies "Library with CBLAS API is required."
+configuration "library" {
+	platforms "posix" "windows-x86_64" "windows-x86"
+
+	// Posix: "openblas" configuration
+
+	versions "OPENBLAS" platform="posix"
+	libs "openblas" platform="posix"
+
+	// Windows: "mkl-tbb-thread-ilp" configuration
+
+	versions "INTEL_MKL" "BLASNATIVEINT" "LAPACKNATIVEINT" platform="windows"
+
+	libs "tbb" "mkl_core" "mkl_tbb_thread" "mkl_intel_c" platform="windows-x86"
+	libs "tbb" "mkl_core" "mkl_tbb_thread" "mkl_intel_ilp64" platform="windows-x86_64"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32\"` platform="windows-x86-dmd"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt\"` platform="windows-x86-dmd"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\intel64\tbb\vc_mt\tbb.dll` platform="windows-x86_64"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\ia32\tbb\vc_mt\tbb.dll` platform="windows-x86"
+}
 
 configuration "openblas" {
 	versions "OPENBLAS"
@@ -26,13 +50,111 @@ configuration "twolib" {
 	libs "blas" "cblas"
 }
 
+configuration "zerolib" {
+	systemDependencies "mir-blas configuration 'zerolib' requires user to specify libraries to link."
+}
 
 configuration "mkl-sequential" {
 	platforms "x86_64" "x86"
-	libs "mkl_blas95_lp64" "mkl_intel_lp64" "mkl_sequential" "mkl_core" platform="x86_64"
-	libs "mkl_blas95" "mkl_intel_c" "mkl_sequential" "mkl_core" platform="x86"
+	versions "INTEL_MKL"
+	libs "mkl_core" "mkl_sequential" "mkl_intel_c" platform="x86"
+	libs "mkl_core" "mkl_sequential" "mkl_intel_lp64" platform="x86_64"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32\"` platform="windows-x86-dmd"
 }
-
-configuration "zerolib" {
-	systemDependencies "mir-blas configuration zerolib requires user to specify libraries to link."
+configuration "mkl-sequential-ilp" {
+	platforms "x86_64" "x86"
+	versions "INTEL_MKL" "BLASNATIVEINT" "LAPACKNATIVEINT"
+	libs "mkl_core" "mkl_sequential" "mkl_intel_c" platform="x86"
+	libs "mkl_core" "mkl_sequential" "mkl_intel_ilp64" platform="x86_64"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32\"` platform="windows-x86-dmd"
+}
+configuration "mkl-tbb-thread" {
+	platforms "x86_64" "x86"
+	versions "INTEL_MKL"
+	libs "tbb" "mkl_core" "mkl_tbb_thread" "mkl_intel_c" platform="x86"
+	libs "tbb" "mkl_core" "mkl_tbb_thread" "mkl_intel_lp64" platform="x86_64"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32\"` platform="windows-x86-dmd"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt\"` platform="windows-x86-dmd"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\intel64\tbb\vc_mt\tbb.dll` platform="windows-x86_64"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\ia32\tbb\vc_mt\tbb.dll` platform="windows-x86"
+}
+configuration "mkl-tbb-thread-ilp" {
+	platforms "x86_64" "x86"
+	versions "INTEL_MKL" "BLASNATIVEINT" "LAPACKNATIVEINT"
+	libs "tbb" "mkl_core" "mkl_tbb_thread" "mkl_intel_c" platform="x86"
+	libs "tbb" "mkl_core" "mkl_tbb_thread" "mkl_intel_ilp64" platform="x86_64"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32\"` platform="windows-x86-dmd"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt\"` platform="windows-x86-dmd"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\intel64\tbb\vc_mt\tbb.dll` platform="windows-x86_64"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\ia32\tbb\vc_mt\tbb.dll` platform="windows-x86"
+}
+configuration "mkl-sequential-dll" {
+	platforms "x86_64" "x86"
+	versions "INTEL_MKL"
+	libs "mkl_core_dll" "mkl_sequential_dll" "mkl_intel_c_dll" platform="x86"
+	libs "mkl_core_dll" "mkl_sequential_dll" "mkl_intel_lp64_dll" platform="x86_64"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32\"` platform="windows-x86-dmd"
+}
+configuration "mkl-sequential-ilp-dll" {
+	platforms "x86_64" "x86"
+	versions "INTEL_MKL" "BLASNATIVEINT" "LAPACKNATIVEINT"
+	libs "mkl_core_dll" "mkl_sequential_dll" "mkl_intel_c_dll" platform="x86"
+	libs "mkl_core_dll" "mkl_sequential_dll" "mkl_intel_ilp64_dll" platform="x86_64"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32\"` platform="windows-x86-dmd"
+}
+configuration "mkl-tbb-thread-dll" {
+	platforms "x86_64" "x86"
+	versions "INTEL_MKL"
+	libs "tbb" "mkl_core_dll" "mkl_tbb_thread_dll" "mkl_intel_c_dll" platform="x86"
+	libs "tbb" "mkl_core_dll" "mkl_tbb_thread_dll" "mkl_intel_lp64_dll" platform="x86_64"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32\"` platform="windows-x86-dmd"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt\"` platform="windows-x86-dmd"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\intel64\tbb\vc_mt\tbb.dll` platform="windows-x86_64"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\ia32\tbb\vc_mt\tbb.dll` platform="windows-x86"
+}
+configuration "mkl-tbb-thread-ilp-dll" {
+	platforms "x86_64" "x86"
+	versions "INTEL_MKL" "BLASNATIVEINT" "LAPACKNATIVEINT"
+	libs "tbb" "mkl_core_dll" "mkl_tbb_thread_dll" "mkl_intel_c_dll" platform="x86"
+	libs "tbb" "mkl_core_dll" "mkl_tbb_thread_dll" "mkl_intel_ilp64_dll" platform="x86_64"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\intel64\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\mkl\lib\ia32\"` platform="windows-x86-dmd"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt` platform="windows-x86_64-ldc"
+	lflags `/LIBPATH:C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt` platform="windows-x86-ldc"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\intel64\vc_mt\"` platform="windows-x86_64-dmd"
+	lflags `/LIBPATH:\"C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\tbb\lib\ia32\vc_mt\"` platform="windows-x86-dmd"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\intel64\tbb\vc_mt\tbb.dll` platform="windows-x86_64"
+	copyFiles `C:\Program Files (x86)\IntelSWTools\compilers_and_libraries\windows\redist\ia32\tbb\vc_mt\tbb.dll` platform="windows-x86"
 }

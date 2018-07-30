@@ -1,0 +1,5 @@
+name "example"
+authors "Ilya Yaroshenko"
+dependency "mir-blas" path="../"
+description "Mir-BLAS example"
+license "BSL-1.0"

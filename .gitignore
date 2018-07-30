@@ -21,3 +21,6 @@ mir-blas-test-blas
 mir-blas-test-cblas
 mir-blas-test-twolib
 mir-blas-test-intel-sequental
+*.dll
+*.exe
+*.lib
