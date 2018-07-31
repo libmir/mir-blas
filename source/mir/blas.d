@@ -16,7 +16,7 @@ import std.traits: isFloatingPoint;
 public import cblas: Uplo, Side;
 
 private auto matrixStride(S)(S a)
- if (isSlice!S == [2])
+ if (S.N == 2)
 {
     assert(a._stride!1 == 1);
     return a._stride != 1 ? a._stride : a.length!1;
@@ -27,8 +27,8 @@ T dot(T,
     SliceKind kindX,
     SliceKind kindY,
     )(
-    Slice!(kindX, [1], const(T)*) x,
-    Slice!(kindY, [1], const(T)*) y,
+    Slice!(const(T)*, 1, kindX) x,
+    Slice!(const(T)*, 1, kindY) y,
     )
 {
     assert(x.length == y.length);
@@ -47,7 +47,7 @@ T dot(T,
 T nrm2(T,
     SliceKind kindX,
     )(
-    Slice!(kindX, [1], const(T)*) x,
+    Slice!(const(T)*, 1, kindX) x,
     )
 {
     return cblas.nrm2(
@@ -62,7 +62,7 @@ T nrm2(T,
 T asum(T,
     SliceKind kindX,
     )(
-    Slice!(kindX, [1], const(T)*) x,
+    Slice!(const(T)*, 1, kindX) x,
     )
 {
     return cblas.asum(
@@ -79,8 +79,8 @@ void axpy(T,
     SliceKind kindY,
     )(
     T a,
-    Slice!(kindX, [1], const(T)*) x,
-    Slice!(kindY, [1], T*) y,
+    Slice!(const(T)*, 1, kindX) x,
+    Slice!(T*, 1, kindY) y,
     )
 {
     assert(x.length == y.length);
@@ -99,7 +99,7 @@ void scal(T,
     SliceKind kindX,
     )(
     T a,
-    Slice!(kindX, [1], T*) x,
+    Slice!(T*, 1, kindX) x,
     )
 {
     cblas.scal(
@@ -115,8 +115,8 @@ void copy(T,
     SliceKind kindX,
     SliceKind kindY,
     )(
-    Slice!(kindX, [1], const(T)*) x,
-    Slice!(kindY, [1], T*) y,
+    Slice!(const(T)*, 1, kindX) x,
+    Slice!(T*, 1, kindY) y,
     )
 {
     assert(x.length == y.length);
@@ -134,8 +134,8 @@ void swap(T,
     SliceKind kindX,
     SliceKind kindY,
     )(
-    Slice!(kindX, [1], T*) x,
-    Slice!(kindY, [1], T*) y,
+    Slice!(T*, 1, kindX) x,
+    Slice!(T*, 1, kindY) y,
     )
 {
     assert(x.length == y.length);
@@ -155,9 +155,9 @@ void ger(T,
     SliceKind kindA,
     )(
     T alpha,
-    Slice!(kindX, [1], const(T)*) x,
-    Slice!(kindY, [1], const(T)*) y,
-    Slice!(kindA, [2], T*) a,
+    Slice!(const(T)*, 1, kindX) x,
+    Slice!(const(T)*, 1, kindY) y,
+    Slice!(T*, 2, kindA) a,
     )
 {
     assert(a.length!0 == x.length);
@@ -204,9 +204,9 @@ void gerc(T,
     SliceKind kindA,
     )(
     T alpha,
-    Slice!(kindX, [1], const(T)*) x,
-    Slice!(kindY, [1], const(T)*) y,
-    Slice!(kindA, [2], T*) a,
+    Slice!(const(T)*, 1, kindX) x,
+    Slice!(const(T)*, 1, kindY) y,
+    Slice!(T*, 2, kindA) a,
     )
 {
     assert(a.length!0 == x.length);
@@ -253,10 +253,10 @@ void gemv(T,
     SliceKind kindY,
     )(
     T alpha,
-    Slice!(kindA, [2], const(T)*) a,
-    Slice!(kindX, [1], const(T)*) x,
+    Slice!(const(T)*, 2, kindA) a,
+    Slice!(const(T)*, 1, kindX) x,
     T beta,
-    Slice!(kindY, [1], T*) y,
+    Slice!(T*, 1, kindY) y,
     )
 {
     assert(a.length!1 == x.length);
@@ -302,10 +302,10 @@ void gemm(T,
     SliceKind kindC,
     )(
     T alpha,
-    Slice!(kindA, [2], const(T)*) a,
-    Slice!(kindB, [2], const(T)*) b,
+    Slice!(const(T)*, 2, kindA) a,
+    Slice!(const(T)*, 2, kindB) b,
     T beta,
-    Slice!(kindC, [2], T*) c,
+    Slice!(T*, 2, kindC) c,
     )
 {
     assert(a.length!1 == b.length!0);
@@ -413,9 +413,9 @@ void syrk(T,
     )(
     Uplo uplo,
     T alpha,
-    Slice!(kindA, [2], const(T)*) a,
+    Slice!(const(T)*, 2, kindA) a,
     T beta,
-    Slice!(kindC, [2], T*) c,
+    Slice!(T*, 2, kindC) c,
     )
 {
     assert(a.length!0 == c.length!0);
@@ -473,8 +473,8 @@ void trmm(T,
     cblas.Uplo uplo,
     cblas.Diag diag,
     T alpha,
-    Slice!(kindA, [2], const(T)*) a,
-    Slice!(kindB, [2], T*) b,
+    Slice!(const(T)*, 2, kindA) a,
+    Slice!(T*, 2, kindB) b,
     )
 {
     assert(a.length!1 == a.length!0);
@@ -550,8 +550,8 @@ void trsm(T,
     cblas.Uplo uplo,
     cblas.Diag diag,
     T alpha,
-    Slice!(kindA, [2], const(T)*) a,
-    Slice!(kindB, [2], T*) b,
+    Slice!(const(T)*, 2, kindA) a,
+    Slice!(T*, 2, kindB) b,
     )
 {
     assert(a.length!1 == a.length!0);
