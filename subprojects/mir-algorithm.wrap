@@ -1,0 +1,4 @@
+[wrap-git]
+directory=mir-algorithm
+url=https://github.com/libmir/mir-algorithm.git
+revision=5693d370289a0038d09d44505a9777522ae4de87
