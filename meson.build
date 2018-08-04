@@ -6,7 +6,7 @@ cc = meson.get_compiler('c')
 blas_deps = [cc.find_library('openblas', required : false)]
 if not blas_deps[0].found()
     blas_deps = [cc.find_library('blas')]
-    cblas_dep = cc.find_library('cblas')
+    cblas_dep = cc.find_library('cblas', required : false)
     if cblas_dep.found()
         blas_deps = [blas_deps, cblas_dep]
     endif
