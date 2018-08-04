@@ -1,4 +1,4 @@
 [wrap-git]
 directory=cblas
 url=https://github.com/DlangScience/cblas.git
-revision=5a7c5d83af36a5137b700d50f94cbe69a6d61ef9
+revision=master
