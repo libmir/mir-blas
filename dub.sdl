@@ -5,7 +5,7 @@ copyright "Copyright © 2017-2018, Symmetry Investments & Kaleidic Associates"
 license "BSL-1.0"
 
 dependency "cblas" version="~>2.0.2"
-dependency "mir-algorithm" version=">=2.0.0-beta2 <3.0.0"
+dependency "mir-algorithm" version=">=2.0.0-beta2 <4.0.0"
 
 configuration "library" {
 	platforms "posix" "windows-x86_64" "windows-x86"
