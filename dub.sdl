@@ -37,6 +37,7 @@ configuration "library" {
 configuration "openblas" {
 	versions "OPENBLAS"
 	libs "openblas"
+	lflags "-L/usr/local/opt/openblas/lib" platform="osx"
 }
 
 configuration "blas" {
