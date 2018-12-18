@@ -14,6 +14,7 @@ configuration "library" {
 
 	versions "OPENBLAS" platform="posix"
 	libs "openblas" platform="posix"
+	lflags "-L/usr/local/opt/openblas/lib" platform="osx"
 
 	// Windows: "mkl-tbb-thread-ilp" configuration
 
