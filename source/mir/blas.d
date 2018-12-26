@@ -15,6 +15,8 @@ import std.traits: isFloatingPoint;
 
 public import cblas: Uplo, Side;
 
+@trusted pure nothrow @nogc:
+
 private auto matrixStride(S)(S a)
  if (S.N == 2)
 {
