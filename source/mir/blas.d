@@ -6,6 +6,35 @@ Copyright:  Copyright © 2017, Symmetry Investments & Kaleidic Associates
 +/
 module mir.blas;
 
+///
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
+    auto b = [2.0, 3, 4].sliced(3, 1).universal;
+
+    auto c = [100.0, 100].sliced(2, 1).universal;
+    gemm(1.0, a, b, 1.0, c);
+    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
+}
+
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+    import mir.ndslice.dynamic: transposed;
+
+    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
+    auto b = [2.0, 3, 4].sliced(3, 1).universal;
+
+    auto c = [100.0, 100].sliced(1, 2).transposed.universal;
+    gemm(1.0, a, b, 1.0, c);
+    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
+}
+
+
 import mir.ndslice.slice;
 import mir.ndslice.dynamic;
 import mir.ndslice.topology;
@@ -378,35 +407,6 @@ void gemm(T,
         cast(cblas.blasint) c.matrixStride,
     );
 }
-
-///
-unittest
-{
-    import mir.ndslice.slice: sliced;
-    import mir.ndslice.topology: universal;
-
-    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
-    auto b = [2.0, 3, 4].sliced(3, 1).universal;
-
-    auto c = [100.0, 100].sliced(2, 1).universal;
-    gemm(1.0, a, b, 1.0, c);
-    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
-}
-
-unittest
-{
-    import mir.ndslice.slice: sliced;
-    import mir.ndslice.topology: universal;
-    import mir.ndslice.dynamic: transposed;
-
-    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
-    auto b = [2.0, 3, 4].sliced(3, 1).universal;
-
-    auto c = [100.0, 100].sliced(1, 2).transposed.universal;
-    gemm(1.0, a, b, 1.0, c);
-    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
-}
-
 
 ///
 void syrk(T,

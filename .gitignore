@@ -25,3 +25,4 @@ mir-blas-test-intel-sequental
 *.exe
 *.lib
 build/
+mir-blas-test-library
