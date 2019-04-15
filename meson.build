@@ -39,12 +39,9 @@ install_subdir('source/',
     install_dir: 'include/d/' + meson.project_name(),
 )
 
-import('pkgconfig').generate(
-    name: meson.project_name(),
+import('pkgconfig').generate(mir_blas_lib,
     description: 'ndslice API for BLAS.',
     subdirs: 'd/' + meson.project_name(),
-    libraries: [mir_blas_lib],
-    version: meson.project_version(),
 )
 
 if get_option('with_test')
