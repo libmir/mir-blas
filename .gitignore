@@ -13,7 +13,6 @@ dub.selections.json
 .vscode
 
 *.a
-
 mir-blas
 mir-blas-test-test
 mir-blas-test-openblas
@@ -26,3 +25,7 @@ mir-blas-test-intel-sequental
 *.lib
 build/
 mir-blas-test-library
+
+subprojects/cblas
+subprojects/mir-algorithm
+subprojects/mir-core
