@@ -75,7 +75,7 @@ T dot(T,
 }
 
 ///
-T nrm2(T,
+auto nrm2(T,
     SliceKind kindX,
     )(
     Slice!(const(T)*, 1, kindX) x,
@@ -83,14 +83,13 @@ T nrm2(T,
 {
     return cblas.nrm2(
         cast(cblas.blasint) x.length,
-
         x.iterator,
         cast(cblas.blasint) x._stride,
     );
 }
 
 ///
-T asum(T,
+auto asum(T,
     SliceKind kindX,
     )(
     Slice!(const(T)*, 1, kindX) x,
@@ -98,7 +97,6 @@ T asum(T,
 {
     return cblas.asum(
         cast(cblas.blasint) x.length,
-
         x.iterator,
         cast(cblas.blasint) x._stride,
     );
