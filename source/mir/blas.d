@@ -616,3 +616,161 @@ unittest
     alias S2 = trsm!(double, Universal, Contiguous);
     alias S3 = trsm!(double, Universal, Universal);
 }
+
+///
+@trusted
+void symv(T,
+    SliceKind kindA,
+    SliceKind kindX,
+    SliceKind kindY,
+    )(
+    Uplo uplo,
+    T alpha,
+    Slice!(const(T)*, 2, kindA) a,
+    Slice!(const(T)*, 1, kindX) x,
+    T beta,
+    Slice!(T*, 1, kindY) y,
+    )
+{
+    assert(a.length!0 == a.length!1);
+    assert(a.length!1 == x.length);
+    assert(a.length!0 == y.length);
+    static if (kindA == Universal)
+    {
+        bool transA;
+        if (a._stride!1 != 1)
+        {
+            a = a.transposed;
+            transA = true;
+        }
+        assert(a._stride!1 == 1, "Matrix A must have a stride equal to 1.");
+    }
+    else
+        enum transA = false;
+    cblas.symv(
+        transA ? cblas.Order.ColMajor : cblas.Order.RowMajor,
+        uplo,
+        
+        cast(cblas.blasint) x.length,
+
+        alpha,
+
+        a.iterator,
+        cast(cblas.blasint) a.matrixStride,
+
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+
+        beta,
+
+        y.iterator,
+        cast(cblas.blasint) y._stride,
+    );
+}
+
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    alias S0 = symv!(double, Contiguous, Contiguous, Contiguous);
+    alias D0 = symv!(double, Contiguous, Contiguous, Universal);
+    alias S1 = symv!(double, Contiguous, Universal, Contiguous);
+    alias D1 = symv!(double, Contiguous, Universal, Universal);
+    alias S2 = symv!(double, Universal, Contiguous, Contiguous);
+    alias D2 = symv!(double, Universal, Contiguous, Universal);
+    alias S3 = symv!(double, Universal, Universal, Contiguous);
+    alias D3 = symv!(double, Universal, Universal, Universal);
+}
+
+///
+@trusted
+void symm(T,
+    SliceKind kindA,
+    SliceKind kindB,
+    SliceKind kindC,
+    )(
+    Side side,
+    Uplo uplo,
+    T alpha,
+    Slice!(const(T)*, 2, kindA) a,
+    Slice!(const(T)*, 2, kindB) b,
+    T beta,
+    Slice!(T*, 2, kindC) c,
+    )
+{
+    assert(a.length!1 == a.length!0);
+    if (side == Side.Left)
+    {
+        assert(a.length!1 == b.length!0);
+        assert(a.length!0 == c.length!0);
+        assert(c.length!1 == b.length!1);
+    }
+    else
+    {
+        assert(a.length!1 == b.length!1);
+        assert(a.length!0 == c.length!1);
+        assert(c.length!0 == b.length!0);
+    }
+
+    static if (kindA == Universal)
+    {
+        bool transA;
+        if (a._stride!1 != 1)
+        {
+            a = a.transposed;
+            uplo = uplo == Uplo.Lower ? Uplo.Upper : Uplo.Lower;
+        }
+        assert(a._stride!1 == 1, "Matrix A must have a stride equal to 1.");
+    }
+
+    static if (kindB == Universal && kindC == Universal)
+    {
+        if (b._stride!1 != 1
+         || c._stride!1 != 1)
+        {
+            b = b.transposed;
+            c = c.transposed;
+            side = side == Side.Left ? Side.Right : Side.Left;
+        }
+
+    }
+    assert(b._stride!1 == 1 && c._stride!1 == 1, "Matrices B and C must be either both row-major or both column-major.");
+
+    cblas.symm(
+        cblas.Order.RowMajor,
+        side,
+        uplo,
+
+        cast(cblas.blasint) c.length!0,
+        cast(cblas.blasint) c.length!1, 
+
+        alpha,
+
+        a.iterator,
+        cast(cblas.blasint) a.matrixStride,
+
+        b.iterator,
+        cast(cblas.blasint) b.matrixStride,
+
+        beta,
+
+        c.iterator,
+        cast(cblas.blasint) c.matrixStride,
+    );
+}
+
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    alias S0 = symm!(double, Contiguous, Contiguous, Contiguous);
+    alias D0 = symm!(double, Contiguous, Contiguous, Universal);
+    alias S1 = symm!(double, Contiguous, Universal, Contiguous);
+    alias D1 = symm!(double, Contiguous, Universal, Universal);
+    alias S2 = symm!(double, Universal, Contiguous, Contiguous);
+    alias D2 = symm!(double, Universal, Contiguous, Universal);
+    alias S3 = symm!(double, Universal, Universal, Contiguous);
+    alias D3 = symm!(double, Universal, Universal, Universal);
+}
