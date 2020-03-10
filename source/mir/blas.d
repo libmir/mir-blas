@@ -670,9 +670,6 @@ void symv(T,
 
 unittest
 {
-    import mir.ndslice.slice: sliced;
-    import mir.ndslice.topology: universal;
-
     alias S0 = symv!(double, Contiguous, Contiguous, Contiguous);
     alias D0 = symv!(double, Contiguous, Contiguous, Universal);
     alias S1 = symv!(double, Contiguous, Universal, Contiguous);
@@ -762,9 +759,6 @@ void symm(T,
 
 unittest
 {
-    import mir.ndslice.slice: sliced;
-    import mir.ndslice.topology: universal;
-
     alias S0 = symm!(double, Contiguous, Contiguous, Contiguous);
     alias D0 = symm!(double, Contiguous, Contiguous, Universal);
     alias S1 = symm!(double, Contiguous, Universal, Contiguous);
@@ -773,4 +767,24 @@ unittest
     alias D2 = symm!(double, Universal, Contiguous, Universal);
     alias S3 = symm!(double, Universal, Universal, Contiguous);
     alias D3 = symm!(double, Universal, Universal, Universal);
+}
+
+///
+auto iamax(T,
+    SliceKind kindX,
+    )(
+    Slice!(const(T)*, 1, kindX) x,
+    )
+{
+    return cblas.iamax(
+        cast(cblas.blasint) x.length,
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+    );
+}
+
+unittest
+{
+    alias S0 = iamax!(double, Contiguous);
+    alias D0 = iamax!(double, Universal);
 }
