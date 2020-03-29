@@ -4,7 +4,7 @@ authors "Ilya Yaroshenko"
 copyright "Copyright © 2017-2018, Symmetry Investments & Kaleidic Associates"
 license "BSL-1.0"
 
-dependency "cblas" version="~>2.0.4"
+dependency "cblas" version=">=2.0.4"
 dependency "mir-algorithm" version=">=2.0.0-beta2 <4.0.0"
 
 configuration "library" {
