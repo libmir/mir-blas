@@ -1,5 +1,5 @@
 # mir-blas
-NDSLICE wrapper for BLAS
+ndslice wrapper for BLAS
 
 ## Required libraries
 
