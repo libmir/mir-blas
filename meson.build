@@ -30,7 +30,7 @@ add_project_arguments([
     '-lowmem',
 ], language: 'd')
 
-required_deps = blas_dep
+required_deps = blas_deps
 
 foreach p : subprojects 
     required_deps += dependency(p, fallback : [p, 'this_dep'])
