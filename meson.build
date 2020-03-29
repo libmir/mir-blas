@@ -1,4 +1,4 @@
-project('mir-blas', 'd', 'c', version : '1.1.10', license: 'BSL-1.0')
+project('mir-blas', 'd', 'c', version: '1.1.10', license: 'BSL-1.0')
 
 description = 'Mir BLAS - ndslice wrapper for BLAS'
 
