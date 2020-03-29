@@ -12,7 +12,7 @@ if not blas_deps[0].found()
     endif
 endif
 
-subprojects = ['cblas', 'mir-core', 'mir-algorithm']
+subprojects = ['mir-core', 'mir-algorithm']
 
 has_cpp_headers = false
 
@@ -30,7 +30,13 @@ add_project_arguments([
     '-lowmem',
 ], language: 'd')
 
-required_deps = blas_deps
+required_deps = blas_deps + [
+    dependency('cblas-d', fallback : ['cblas', 'cblas_dep']),
+]
+
+foreach p : subprojects 
+    required_deps += dependency(p, fallback : [p, p.underscorify() + '_dep'])
+endforeach
 
 foreach p : subprojects 
     required_deps += dependency(p, fallback : [p, p.underscorify() + '_dep'])
