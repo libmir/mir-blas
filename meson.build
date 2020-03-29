@@ -12,7 +12,7 @@ if not blas_deps[0].found()
     endif
 endif
 
-subprojects = ['cblas', 'mir-algorithm']
+subprojects = ['cblas', 'mir-core', 'mir-algorithm']
 
 has_cpp_headers = false
 
