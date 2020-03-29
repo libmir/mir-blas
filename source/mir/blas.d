@@ -1,5 +1,5 @@
 /++
-Low level ndslice wrapper for BLAS.
+Low-level ndslice wrapper for BLAS.
 
 Authors: Ilya Yaroshenko
 Copyright:  Copyright © 2017, Symmetry Investments & Kaleidic Associates
