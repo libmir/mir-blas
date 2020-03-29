@@ -31,7 +31,6 @@ add_project_arguments([
 ], language: 'd')
 
 required_deps = blas_dep
-]
 
 foreach p : subprojects 
     required_deps += dependency(p, fallback : [p, 'this_dep'])
