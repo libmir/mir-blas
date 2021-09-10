@@ -61,8 +61,12 @@ T dot(T,
     Slice!(const(T)*, 1, kindX) x,
     Slice!(const(T)*, 1, kindY) y,
     )
+in
 {
     assert(x.length == y.length);
+}
+do
+{
     return cblas.dot(
         cast(cblas.blasint) x.length,
 
@@ -111,8 +115,12 @@ void axpy(T,
     Slice!(const(T)*, 1, kindX) x,
     Slice!(T*, 1, kindY) y,
     )
+in
 {
     assert(x.length == y.length);
+}
+do
+{
     cblas.axpy(
         cast(cblas.blasint) x.length,
         a,
@@ -147,8 +155,12 @@ void copy(T,
     Slice!(const(T)*, 1, kindX) x,
     Slice!(T*, 1, kindY) y,
     )
+in
 {
     assert(x.length == y.length);
+}
+do
+{
     cblas.copy(
         cast(cblas.blasint) x.length,
         x.iterator,
@@ -166,8 +178,12 @@ void swap(T,
     Slice!(T*, 1, kindX) x,
     Slice!(T*, 1, kindY) y,
     )
+in
 {
     assert(x.length == y.length);
+}
+do
+{
     cblas.swap(
         cast(cblas.blasint) x.length,
         x.iterator,
@@ -188,9 +204,13 @@ void ger(T,
     Slice!(const(T)*, 1, kindY) y,
     Slice!(T*, 2, kindA) a,
     )
+in
 {
     assert(a.length!0 == x.length);
     assert(a.length!1 == y.length);
+}
+do
+{
     static if (kindA == Universal)
     {
         bool transA;
@@ -237,9 +257,13 @@ void gerc(T,
     Slice!(const(T)*, 1, kindY) y,
     Slice!(T*, 2, kindA) a,
     )
+in
 {
     assert(a.length!0 == x.length);
     assert(a.length!1 == y.length);
+}
+do
+{
     static if (kindA == Universal)
     {
         bool transA;
@@ -287,9 +311,13 @@ void gemv(T,
     T beta,
     Slice!(T*, 1, kindY) y,
     )
+in
 {
     assert(a.length!1 == x.length);
     assert(a.length!0 == y.length);
+}
+do
+{
     static if (kindA == Universal)
     {
         bool transA;
@@ -336,10 +364,14 @@ void gemm(T,
     T beta,
     Slice!(T*, 2, kindC) c,
     )
+in
 {
     assert(a.length!1 == b.length!0);
     assert(a.length!0 == c.length!0);
     assert(c.length!1 == b.length!1);
+}
+do
+{
     auto k = cast(cblas.blasint) a.length!1;
 
     static if (kindC == Universal)
@@ -417,9 +449,13 @@ void syrk(T,
     T beta,
     Slice!(T*, 2, kindC) c,
     )
+in
 {
     assert(a.length!0 == c.length!0);
     assert(c.length!1 == c.length!0);
+}
+do
+{
     auto k = a.length!1;
     static if (kindC == Universal)
     {
@@ -476,10 +512,13 @@ void trmm(T,
     Slice!(const(T)*, 2, kindA) a,
     Slice!(T*, 2, kindB) b,
     )
+in
 {
     assert(a.length!1 == a.length!0);
     assert(a.length == (side == cblas.Side.Left ? b.length!0 : b.length!1));
-
+}
+do
+{
     static if (kindB == Universal)
     {
         if (b._stride!1 != 1)
@@ -553,10 +592,13 @@ void trsm(T,
     Slice!(const(T)*, 2, kindA) a,
     Slice!(T*, 2, kindB) b,
     )
+in
 {
     assert(a.length!1 == a.length!0);
     assert(a.length == (side == cblas.Side.Left ? b.length!0 : b.length!1));
-
+}
+do
+{
     static if (kindB == Universal)
     {
         if (b._stride!1 != 1)
@@ -631,10 +673,14 @@ void symv(T,
     T beta,
     Slice!(T*, 1, kindY) y,
     )
+in
 {
     assert(a.length!0 == a.length!1);
     assert(a.length!1 == x.length);
     assert(a.length!0 == y.length);
+}
+do
+{
     static if (kindA == Universal)
     {
         bool transA;
@@ -695,6 +741,7 @@ void symm(T,
     T beta,
     Slice!(T*, 2, kindC) c,
     )
+in
 {
     assert(a.length!1 == a.length!0);
     if (side == Side.Left)
@@ -709,7 +756,9 @@ void symm(T,
         assert(a.length!0 == c.length!1);
         assert(c.length!0 == b.length!0);
     }
-
+}
+do
+{
     static if (kindA == Universal)
     {
         bool transA;
