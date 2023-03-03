@@ -951,14 +951,13 @@ unittest
 @trusted pure @nogc nothrow
 void spr(T,
     SliceKind kindA,
-    SliceKind kindC,
     string type
     )(
     T alpha,
     Slice!(const(T)*, 1, kindA) a,
-    Slice!(StairsIterator!(T*, type), 1, kindC) c,
+    Slice!(StairsIterator!(T*, type)) c,
     )
-    if (type == "+" || type == "-")
+  if (type == "+" || type == "-")
 in
 {
     assert(a.length == c.length);
@@ -1014,5 +1013,85 @@ unittest
     auto output = uninitSlice!double(6).stairs!"-"(3);
 
     spr(1.0, x, output);
+    assert(output.equal(result));
+}
+
+///
+@trusted pure @nogc nothrow
+void spmv(T,
+    SliceKind kindX,
+    SliceKind kindY,
+    string type
+    )(
+    T alpha,
+    Slice!(StairsIterator!(T*, type)) a,
+    Slice!(const(T)*, 1, kindX) x,
+    T beta,
+    Slice!(T*, 1, kindY) y,
+    )
+  if (type == "+" || type == "-")
+in
+{
+    assert(a.length == x.length);
+    assert(x.length == y.length);
+}
+do
+{
+    enum Uplo uplo = type == "-" ? Uplo.Upper : Uplo.Lower;
+    cblas.spmv(
+        cblas.Order.RowMajor,
+        uplo,
+
+        cast(cblas.blasint) x.length,
+
+        alpha,
+
+        a.iterator._iterator,
+
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+
+        beta,
+
+        y.iterator,
+        cast(cblas.blasint) y._stride,
+    );
+}
+
+///
+@trusted pure
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: stairs;
+
+    auto result = [8.0, 14, 8].sliced;
+
+    auto A = [1.0, 2, 3, 1, 2, 1].stairs!"+"(3);
+    auto x = [1.0, 2, 3].sliced;
+    auto output = uninitSlice!double(3);
+
+    spmv(1.0, A, x, 0.0, output);
+    assert(output.equal(result));
+}
+
+///
+@trusted pure
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: stairs;
+
+    auto result = [14.0, 10, 10].sliced;
+
+    auto A = [1.0, 2, 3, 1, 2, 1].stairs!"-"(3);
+    auto x = [1.0, 2, 3].sliced;
+    auto output = uninitSlice!double(3);
+
+    spmv(1.0, A, x, 0.0, output);
     assert(output.equal(result));
 }
