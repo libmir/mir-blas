@@ -6,46 +6,16 @@ Copyright:  Copyright © 2017, Symmetry Investments & Kaleidic Associates
 +/
 module mir.blas;
 
-///
-unittest
-{
-    import mir.ndslice.slice: sliced;
-    import mir.ndslice.topology: universal;
-
-    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
-    auto b = [2.0, 3, 4].sliced(3, 1).universal;
-
-    auto c = [100.0, 100].sliced(2, 1).universal;
-    gemm(1.0, a, b, 1.0, c);
-    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
-}
-
-unittest
-{
-    import mir.ndslice.slice: sliced;
-    import mir.ndslice.topology: universal;
-    import mir.ndslice.dynamic: transposed;
-
-    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
-    auto b = [2.0, 3, 4].sliced(3, 1).universal;
-
-    auto c = [100.0, 100].sliced(1, 2).transposed.universal;
-    gemm(1.0, a, b, 1.0, c);
-    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
-}
-
-
 import mir.ndslice.slice;
 import mir.ndslice.dynamic;
 import mir.ndslice.topology;
-static import cblas;
 
 import std.traits: isFloatingPoint;
 
+static import cblas;
 public import cblas: Uplo, Side;
 
-@trusted pure nothrow @nogc:
-
+@safe pure nothrow @nogc
 private auto matrixStride(S)(S a)
  if (S.N == 2)
 {
@@ -54,6 +24,7 @@ private auto matrixStride(S)(S a)
 }
 
 ///
+@trusted pure nothrow @nogc
 T dot(T,
     SliceKind kindX,
     SliceKind kindY,
@@ -79,6 +50,7 @@ do
 }
 
 ///
+@trusted pure nothrow @nogc
 auto nrm2(T,
     SliceKind kindX,
     )(
@@ -93,6 +65,7 @@ auto nrm2(T,
 }
 
 ///
+@trusted pure nothrow @nogc
 auto asum(T,
     SliceKind kindX,
     )(
@@ -107,6 +80,7 @@ auto asum(T,
 }
 
 ///
+@trusted pure nothrow @nogc
 void axpy(T,
     SliceKind kindX,
     SliceKind kindY,
@@ -132,6 +106,7 @@ do
 }
 
 ///
+@trusted pure nothrow @nogc
 void scal(T,
     SliceKind kindX,
     )(
@@ -148,6 +123,7 @@ void scal(T,
 }
 
 ///
+@trusted pure nothrow @nogc
 void copy(T,
     SliceKind kindX,
     SliceKind kindY,
@@ -171,6 +147,7 @@ do
 }
 
 ///
+@trusted pure nothrow @nogc
 void swap(T,
     SliceKind kindX,
     SliceKind kindY,
@@ -194,6 +171,7 @@ do
 }
 
 ///
+@trusted pure nothrow @nogc
 void ger(T,
     SliceKind kindX,
     SliceKind kindY,
@@ -247,6 +225,7 @@ do
 }
 
 ///
+@trusted pure nothrow @nogc
 void gerc(T,
     SliceKind kindX,
     SliceKind kindY,
@@ -300,6 +279,7 @@ do
 }
 
 ///
+@trusted pure nothrow @nogc
 void gemv(T,
     SliceKind kindA,
     SliceKind kindX,
@@ -353,6 +333,7 @@ do
 }
 
 ///
+@trusted pure nothrow @nogc
 void gemm(T,
     SliceKind kindA,
     SliceKind kindB,
@@ -439,6 +420,37 @@ do
 }
 
 ///
+@trusted pure nothrow
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
+    auto b = [2.0, 3, 4].sliced(3, 1).universal;
+
+    auto c = [100.0, 100].sliced(2, 1).universal;
+    gemm(1.0, a, b, 1.0, c);
+    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
+}
+
+@trusted pure nothrow
+unittest
+{
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+    import mir.ndslice.dynamic: transposed;
+
+    auto a = [3.0, 5, 2, 4, 2, 3].sliced(2, 3).universal;
+    auto b = [2.0, 3, 4].sliced(3, 1).universal;
+
+    auto c = [100.0, 100].sliced(1, 2).transposed.universal;
+    gemm(1.0, a, b, 1.0, c);
+    assert(c == [[6 + 15 + 8 + 100], [8 + 6 + 12 + 100]]);
+}
+
+///
+@trusted pure nothrow @nogc
 void syrk(T,
     SliceKind kindA,
     SliceKind kindC,
@@ -501,6 +513,7 @@ do
 }
 
 ///
+@trusted pure nothrow @nogc
 void trmm(T,
     SliceKind kindA,
     SliceKind kindB,
@@ -568,6 +581,7 @@ do
     );
 }
 
+@trusted pure nothrow @nogc
 unittest
 {
     import mir.ndslice.slice: sliced;
@@ -579,8 +593,8 @@ unittest
     alias S3 = trmm!(double, Universal, Universal);
 }
 
-
 ///
+@trusted pure nothrow @nogc
 void trsm(T,
     SliceKind kindA,
     SliceKind kindB,
@@ -648,6 +662,7 @@ do
     );
 }
 
+@safe pure nothrow @nogc
 unittest
 {
     import mir.ndslice.slice: sliced;
@@ -660,7 +675,7 @@ unittest
 }
 
 ///
-@trusted
+@trusted pure nothrow @nogc
 void symv(T,
     SliceKind kindA,
     SliceKind kindX,
@@ -714,6 +729,7 @@ do
     );
 }
 
+@safe pure nothrow @nogc
 unittest
 {
     alias S0 = symv!(double, Contiguous, Contiguous, Contiguous);
@@ -727,7 +743,7 @@ unittest
 }
 
 ///
-@trusted
+@trusted pure nothrow @nogc
 void symm(T,
     SliceKind kindA,
     SliceKind kindB,
@@ -806,6 +822,7 @@ do
     );
 }
 
+@safe pure nothrow @nogc
 unittest
 {
     alias S0 = symm!(double, Contiguous, Contiguous, Contiguous);
@@ -819,6 +836,7 @@ unittest
 }
 
 ///
+@trusted pure nothrow @nogc
 auto iamax(T,
     SliceKind kindX,
     )(
@@ -832,6 +850,7 @@ auto iamax(T,
     );
 }
 
+@safe pure nothrow @nogc
 unittest
 {
     alias S0 = iamax!(double, Contiguous);
