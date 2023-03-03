@@ -6,8 +6,9 @@ Copyright:  Copyright © 2017, Symmetry Investments & Kaleidic Associates
 +/
 module mir.blas;
 
-import mir.ndslice.slice;
 import mir.ndslice.dynamic;
+import mir.ndslice.iterator: StairsIterator;
+import mir.ndslice.slice;
 import mir.ndslice.topology;
 
 import std.traits: isFloatingPoint;
@@ -943,5 +944,75 @@ unittest
     auto output = slice!double([3, 3], 0);
 
     syr(Uplo.Lower, 1.0, x, output);
+    assert(output.equal(result));
+}
+
+///
+@trusted pure @nogc nothrow
+void spr(T,
+    SliceKind kindA,
+    SliceKind kindC,
+    string type
+    )(
+    T alpha,
+    Slice!(const(T)*, 1, kindA) a,
+    Slice!(StairsIterator!(T*, type), 1, kindC) c,
+    )
+    if (type == "+" || type == "-")
+in
+{
+    assert(a.length == c.length);
+}
+do
+{
+    enum Uplo uplo = type == "-" ? Uplo.Upper : Uplo.Lower;
+    cblas.spr(
+        cblas.Order.RowMajor,
+        uplo,
+
+        cast(cblas.blasint) c.length!0,
+
+        alpha,
+
+        a.iterator,
+        cast(cblas.blasint) a._stride,
+
+        c.iterator._iterator
+    );
+}
+
+///
+pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: stairs;
+
+    auto result = [1.0, 2, 4, 3, 6, 9].stairs!"+"(3);
+
+    auto x = [1.0, 2, 3].sliced;
+    auto output = uninitSlice!double(6).stairs!"+"(3);
+
+    spr(1.0, x, output);
+    assert(output.equal(result));
+}
+
+///
+pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: stairs;
+
+    auto result = [1.0, 2, 3, 4, 6, 9].stairs!"-"(3);
+
+    auto x = [1.0, 2, 3].sliced;
+    auto output = uninitSlice!double(6).stairs!"-"(3);
+
+    spr(1.0, x, output);
     assert(output.equal(result));
 }
