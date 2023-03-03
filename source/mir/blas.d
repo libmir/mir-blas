@@ -856,3 +856,92 @@ unittest
     alias S0 = iamax!(double, Contiguous);
     alias D0 = iamax!(double, Universal);
 }
+
+///
+@trusted pure @nogc nothrow
+void syr(T,
+    SliceKind kindA,
+    SliceKind kindC,
+    )(
+    Uplo uplo,
+    T alpha,
+    Slice!(const(T)*, 1, kindA) a,
+    Slice!(T*, 2, kindC) c,
+    )
+in
+{
+    assert(a.length!0 == c.length!0);
+    assert(c.length!1 == c.length!0);
+}
+do
+{
+    static if (kindC == Universal)
+    {
+        if (c._stride!1 != 1)
+        {
+            c = c.transposed;
+            uplo = uplo == Uplo.Lower ? Uplo.Upper : Uplo.Lower;
+        }
+        assert(c._stride!1 == 1, "Matrix C must have a stride equal to 1.");
+    }
+    else
+        enum transC = false;
+    cblas.syr(
+        cblas.Order.RowMajor,
+        uplo,
+
+        cast(cblas.blasint) c.length!0,
+
+        alpha,
+
+        a.iterator,
+        cast(cblas.blasint) a._stride,
+
+        c.iterator,
+        cast(cblas.blasint) c._stride,
+    );
+}
+
+///
+@safe pure
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: slice;
+    import mir.ndslice.fuse: fuse;
+    import mir.ndslice.slice: sliced;
+
+    auto result = [
+        [1.0, 2, 3],
+        [0.0, 4, 6],
+        [0.0, 0, 9]
+    ].fuse;
+
+    auto x = [1.0, 2, 3].sliced;
+    auto output = slice!double([3, 3], 0);
+
+    syr(Uplo.Upper, 1.0, x, output);
+    assert(output.equal(result));
+}
+
+///
+@safe pure
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: slice;
+    import mir.ndslice.fuse: fuse;
+    import mir.ndslice.slice: sliced;
+
+    auto result = [
+        [1.0, 0, 0],
+        [2.0, 4, 0],
+        [3.0, 6, 9]
+    ].fuse;
+
+    auto x = [1.0, 2, 3].sliced;
+    auto output = slice!double([3, 3], 0);
+
+    syr(Uplo.Lower, 1.0, x, output);
+    assert(output.equal(result));
+}
