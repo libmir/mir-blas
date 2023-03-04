@@ -583,7 +583,7 @@ do
 }
 
 /// Example: Left/Upper/NonUnit
-@trusted pure nothrow
+@safe pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -600,7 +600,7 @@ unittest
 }
 
 /// Example: Right/Upper/NonUnit
-@trusted pure nothrow
+@safe pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -617,7 +617,7 @@ unittest
 }
 
 /// Example: Left/Lower/NonUnit
-@trusted pure nothrow
+@safe pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -634,7 +634,7 @@ unittest
 }
 
 /// Example: Right/Lower/NonUnit
-@trusted pure nothrow
+@safe pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -651,7 +651,7 @@ unittest
 }
 
 /// Example: Left/Upper/Unit
-@trusted pure nothrow
+@safe pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -669,7 +669,7 @@ unittest
 }
 
 /// Example: Right/Upper/Unit
-@trusted pure nothrow
+@safe pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -1163,7 +1163,7 @@ do
 }
 
 ///
-@trusted pure
+pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -1182,7 +1182,7 @@ unittest
 }
 
 ///
-@trusted pure
+pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -1343,7 +1343,7 @@ do
 }
 
 /// Example: Upper/NonUnit
-@trusted pure nothrow
+pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -1359,7 +1359,7 @@ unittest
 }
 
 /// Example: Lower/NonUnit
-@trusted pure nothrow
+pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
@@ -1375,7 +1375,7 @@ unittest
 }
 
 /// Example: Upper/Unit
-@trusted pure nothrow
+pure nothrow
 unittest
 {
     import mir.algorithm.iteration: equal;
