@@ -15,14 +15,24 @@ See [wiki: Link with CBLAS & LAPACK](https://github.com/libmir/mir-lapack/wiki/L
  - axpy
  - scal
  - swap
+ - iamax
 
 ### Level 2
  - gemv
  - ger (includes geru)
  - gerc (includes ger)
+ - symv
+ - spmv
+ - syr
+ - spr
+ - trmv
+ - tpmv
+ - trsv
+ - tpsv
 
 ### Level 3
  - gemm
+ - symm
  - syrk
  - trmm
  - trsm
