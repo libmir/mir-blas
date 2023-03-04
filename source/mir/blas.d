@@ -1360,6 +1360,7 @@ void tpmv(T,
     Slice!(StairsIterator!(T*, type)) a,
     Slice!(T*, 1, kindX) x,
     )
+  if (type == "+" || type == "-")
 in
 {
     assert(a.length == x.length);
