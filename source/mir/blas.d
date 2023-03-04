@@ -1051,6 +1051,15 @@ unittest
     assert(output.equal(result));
 }
 
+@safe pure nothrow @nogc
+unittest
+{
+    alias S0 = syr!(double, Contiguous, Contiguous);
+    alias D0 = syr!(double, Contiguous, Universal);
+    alias S2 = syr!(double, Universal, Contiguous);
+    alias D2 = syr!(double, Universal, Universal);
+}
+
 ///
 @trusted pure @nogc nothrow
 void spr(T,
@@ -1118,6 +1127,15 @@ unittest
 
     spr(1.0, x, output);
     assert(output.equal(result));
+}
+
+@safe pure nothrow @nogc
+unittest
+{
+    alias S0 = spr!(double, Contiguous, "+");
+    alias D0 = spr!(double, Contiguous, "-");
+    alias S1 = spr!(double, Universal,"+");
+    alias D1 = spr!(double, Universal, "-");
 }
 
 ///
@@ -1198,6 +1216,19 @@ unittest
 
     spmv(1.0, A, x, 0.0, output);
     assert(output.equal(result));
+}
+
+@safe pure nothrow @nogc
+unittest
+{
+    alias S0 = spmv!(double, Contiguous, Contiguous, "+");
+    alias D0 = spmv!(double, Contiguous, Universal, "+");
+    alias S1 = spmv!(double, Contiguous, Contiguous, "-");
+    alias D1 = spmv!(double, Contiguous, Universal, "-");
+    alias S2 = spmv!(double, Universal, Contiguous, "+");
+    alias D2 = spmv!(double, Universal, Universal, "+");
+    alias S3 = spmv!(double, Universal, Contiguous, "-");
+    alias D3 = spmv!(double, Universal, Universal, "-");
 }
 
 ///
@@ -1310,6 +1341,15 @@ unittest
     assert(b.equal(result));
 }
 
+@safe pure nothrow @nogc
+unittest
+{
+    alias S0 = trmv!(double, Contiguous, Contiguous);
+    alias D0 = trmv!(double, Contiguous, Universal);
+    alias S1 = trmv!(double, Universal, Contiguous);
+    alias D1 = trmv!(double, Universal, Universal);
+}
+
 ///
 @trusted pure nothrow @nogc
 void tpmv(T,
@@ -1389,4 +1429,13 @@ unittest
     auto b = [2.0, 3, 4].sliced(3);
     tpmv(cblas.Diag.Unit, a, b);
     assert(b.equal(result));
+}
+
+@safe pure nothrow @nogc
+unittest
+{
+    alias S0 = tpmv!(double, Contiguous, "+");
+    alias D0 = tpmv!(double, Contiguous, "-");
+    alias S1 = tpmv!(double, Universal, "+");
+    alias D1 = tpmv!(double, Universal, "-");
 }
