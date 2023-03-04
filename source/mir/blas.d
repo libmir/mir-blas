@@ -1199,3 +1199,194 @@ unittest
     spmv(1.0, A, x, 0.0, output);
     assert(output.equal(result));
 }
+
+///
+@trusted pure nothrow @nogc
+void trmv(T,
+    SliceKind kindA,
+    SliceKind kindX,
+    )(
+    cblas.Uplo uplo,
+    cblas.Diag diag,
+    Slice!(const(T)*, 2, kindA) a,
+    Slice!(T*, 1, kindX) x,
+    )
+in
+{
+    assert(a.length!1 == a.length!0);
+    assert(a.length!0 == x.length!0);
+}
+do
+{
+    static if (kindA == Universal)
+    {
+        bool transA;
+        if (a._stride!1 != 1)
+        {
+            a = a.transposed;
+            transA = true;
+        }
+        assert(a._stride!1 == 1, "Matrix A must have a stride equal to 1.");
+    }
+    else
+        enum transA = false;
+
+    cblas.trmv(
+        transA ? cblas.Order.ColMajor : cblas.Order.RowMajor,
+        uplo,
+        cblas.Transpose.NoTrans,
+        diag,
+
+        cast(cblas.blasint) a.length,
+
+        a.iterator,
+        cast(cblas.blasint) a._stride,
+
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+    );
+}
+
+/// Example: Upper/NonUnit
+@safe pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.slice: sliced;
+
+    auto result = [29.0, 18, 4].sliced(3);
+
+    auto a = [3.0, 5, 2, 0, 2, 3, 0, 0, 1].sliced(3, 3);
+    auto b = [2.0, 3, 4].sliced(3);
+    trmv(cblas.Uplo.Upper, cblas.Diag.NonUnit, a, b);
+    assert(b.equal(result));
+}
+
+/// Example: Lower/NonUnit
+@safe pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.slice: sliced;
+
+    auto result = [6.0, 16, 17].sliced(3);
+
+    auto a = [3.0, 0, 0, 5, 2, 0, 2, 3, 1].sliced(3, 3);
+    auto b = [2.0, 3, 4].sliced(3);
+    trmv(cblas.Uplo.Lower, cblas.Diag.NonUnit, a, b);
+    assert(b.equal(result));
+}
+
+/// Upper/NonUnit, but transposing first (so only diagonal is used)
+@safe pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.dynamic: transposed;
+    import mir.ndslice.slice: sliced;
+
+    auto result = [6.0, 6, 4].sliced(3);
+
+    auto a = [3.0, 5, 2, 0, 2, 3, 0, 0, 1].sliced(3, 3).transposed;
+    auto b = [2.0, 3, 4].sliced(3);
+    trmv(cblas.Uplo.Upper, cblas.Diag.NonUnit, a, b);
+    assert(b.equal(result));
+}
+
+/// Example: Upper/Unit
+@safe pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    auto result = [25.0, 15, 4].sliced(3);
+
+    // Setting cblas.Diag.Unit assumes diagonals are 1s, even if they are not
+    auto a = [3.0, 5, 2, 0, 2, 3, 0, 0, 1].sliced(3, 3);
+    auto b = [2.0, 3, 4].sliced(3);
+    trmv(cblas.Uplo.Upper, cblas.Diag.Unit, a, b);
+    assert(b.equal(result));
+}
+
+///
+@trusted pure nothrow @nogc
+void tpmv(T,
+    SliceKind kindX,
+    string type
+    )(
+    cblas.Diag diag,
+    Slice!(StairsIterator!(T*, type)) a,
+    Slice!(T*, 1, kindX) x,
+    )
+in
+{
+    assert(a.length == x.length);
+}
+do
+{
+    enum Uplo uplo = type == "-" ? Uplo.Upper : Uplo.Lower;
+    cblas.tpmv(
+        cblas.Order.RowMajor,
+        uplo,
+        cblas.Transpose.NoTrans,
+        diag,
+
+        cast(cblas.blasint) a.length,
+
+        a.iterator._iterator,
+
+        x.iterator,
+        cast(cblas.blasint) x._stride,
+    );
+}
+
+/// Example: Upper/NonUnit
+@trusted pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: stairs;
+
+    auto result = [29.0, 18, 4].sliced(3);
+
+    auto a = [3.0, 5, 2, 2, 3, 1].stairs!"-"(3);
+    auto b = [2.0, 3, 4].sliced(3);
+    tpmv(cblas.Diag.NonUnit, a, b);
+    assert(b.equal(result));
+}
+
+/// Example: Lower/NonUnit
+@trusted pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: stairs;
+
+    auto result = [6.0, 16, 17].sliced(3);
+
+    auto a = [3.0, 5, 2, 2, 3, 1].stairs!"+"(3);
+    auto b = [2.0, 3, 4].sliced(3);
+    tpmv(cblas.Diag.NonUnit, a, b);
+    assert(b.equal(result));
+}
+
+/// Example: Upper/Unit
+@trusted pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: stairs;
+
+    auto result = [25.0, 15, 4].sliced(3);
+
+    // Setting cblas.Diag.Unit assumes diagonals are 1s, even if they are not
+    auto a = [3.0, 5, 2, 2, 3, 1].stairs!"-"(3);
+    auto b = [2.0, 3, 4].sliced(3);
+    tpmv(cblas.Diag.Unit, a, b);
+    assert(b.equal(result));
+}
