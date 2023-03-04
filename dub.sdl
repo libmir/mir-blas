@@ -12,10 +12,9 @@ configuration "library" {
 
 	// Posix: "openblas" configuration
 
-	versions "OPENBLAS" platform="posix"
-	libs "openblas" platform="posix"
-	lflags "-L/usr/local/opt/openblas/lib" platform="osx"
-	lflags "-L/opt/homebrew/opt/openblas/lib" platform="osx"
+	versions "OPENBLAS" platform="linux"
+	libs "openblas" platform="linux"
+	libs "cblas" platform="darwin"
 
 	// Windows: "mkl-sequential-ilp" configuration
 
