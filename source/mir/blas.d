@@ -582,6 +582,110 @@ do
     );
 }
 
+/// Example: Left/Upper/NonUnit
+@trusted pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    auto result = [29.0, 18.0, 4.0].sliced(3, 1);
+
+    auto a = [3.0, 5, 2, 0, 2, 3, 0, 0, 1].sliced(3, 3).universal;
+    auto b = [2.0, 3, 4].sliced(3, 1).universal;
+    trmm(cblas.Side.Left, cblas.Uplo.Upper, cblas.Diag.NonUnit, 1.0, a, b);
+    assert(b.equal(result));
+}
+
+/// Example: Right/Upper/NonUnit
+@trusted pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    auto result = [6.0, 16, 17].sliced(1, 3);
+
+    auto a = [3.0, 5, 2, 0, 2, 3, 0, 0, 1].sliced(3, 3).universal;
+    auto b = [2.0, 3, 4].sliced(1, 3).universal;
+    trmm(cblas.Side.Right, cblas.Uplo.Upper, cblas.Diag.NonUnit, 1.0, a, b);
+    assert(b.equal(result));
+}
+
+/// Example: Left/Lower/NonUnit
+@trusted pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    auto result = [6.0, 16, 17].sliced(3, 1);
+
+    auto a = [3.0, 0, 0, 5, 2, 0, 2, 3, 1].sliced(3, 3).universal;
+    auto b = [2.0, 3, 4].sliced(3, 1).universal;
+    trmm(cblas.Side.Left, cblas.Uplo.Lower, cblas.Diag.NonUnit, 1.0, a, b);
+    assert(b.equal(result));
+}
+
+/// Example: Right/Lower/NonUnit
+@trusted pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    auto result = [29.0, 18.0, 4.0].sliced(1, 3);
+
+    auto a = [3.0, 0, 0, 5, 2, 0, 2, 3, 1].sliced(3, 3).universal;
+    auto b = [2.0, 3, 4].sliced(1, 3).universal;
+    trmm(cblas.Side.Right, cblas.Uplo.Lower, cblas.Diag.NonUnit, 1.0, a, b);
+    assert(b.equal(result));
+}
+
+/// Example: Left/Upper/Unit
+@trusted pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    auto result = [25.0, 15.0, 4.0].sliced(3, 1);
+
+    // Setting cblas.Diag.Unit assumes diagonals are 1s, even if they are not
+    auto a = [3.0, 5, 2, 0, 2, 3, 0, 0, 1].sliced(3, 3).universal;
+    auto b = [2.0, 3, 4].sliced(3, 1).universal;
+    trmm(cblas.Side.Left, cblas.Uplo.Upper, cblas.Diag.Unit, 1.0, a, b);
+    assert(b.equal(result));
+}
+
+/// Example: Right/Upper/Unit
+@trusted pure nothrow
+unittest
+{
+    import mir.algorithm.iteration: equal;
+    import mir.ndslice.allocation: uninitSlice;
+    import mir.ndslice.slice: sliced;
+    import mir.ndslice.topology: universal;
+
+    auto result = [2.0, 13, 17].sliced(1, 3);
+
+    // Setting cblas.Diag.Unit assumes diagonals are 1s, even if they are not
+    auto a = [3.0, 5, 2, 0, 2, 3, 0, 0, 1].sliced(3, 3).universal;
+    auto b = [2.0, 3, 4].sliced(1, 3).universal;
+    trmm(cblas.Side.Right, cblas.Uplo.Upper, cblas.Diag.Unit, 1.0, a, b);
+    assert(b.equal(result));
+}
+
 @trusted pure nothrow @nogc
 unittest
 {
